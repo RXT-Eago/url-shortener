@@ -6,7 +6,7 @@ import type { Request, Response } from "express";
 dotenv.config();
 const app = express();
 
-const PORT = process.env.PORT || 5050;
+const PORT = process.env.SHORTNER_API_PORT || 5050;
 
 app.get("/", (request: Request, response: Response) => { 
   response.status(200).send("Hello World");
