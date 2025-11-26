@@ -15,3 +15,11 @@ A solution to create a url shortner service
 ## DB
 
 > Classic SQL DB will do the job (but scalability can become an issue...)
+
+## Improvement
+
+- ORM (Prisma)
+- enhance UI
+- Nest (MVC pattern)
+- Deployment
+- TurboRepo @Vercel

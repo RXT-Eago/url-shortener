@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   api:
     build:
@@ -12,7 +10,10 @@ services:
     depends_on:
       - db
     networks:
-      - brige
+      - url-shortner-network
+    volumes:
+      - ./url-shortener-api:/app
+      - /app/node_modules
 
   ui:
     build:
@@ -25,16 +26,21 @@ services:
     depends_on:
       - api
     networks:
-      - brige
+      - url-shortner-network
+    volumes:
+      - ./ui/url-shortner:/app
+      - /app/node_modules
 
   db:
     image: postgres:17.5-alpine
     ports:
       - 5432:5432
-    env_file:
-      - .env
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=url_shortener
     networks:
-      - brige
+      - url-shortner-network
     volumes:
       - db_data:/var/lib/postgresql/data
 
@@ -42,4 +48,6 @@ volumes:
   db_data:
 
 networks:
-  brige:
+  url-shortner-network:
+    driver: bridge
+
