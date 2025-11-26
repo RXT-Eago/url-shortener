@@ -23,3 +23,4 @@ A solution to create a url shortner service
 - Nest (MVC pattern)
 - Deployment
 - TurboRepo @Vercel
+- pnpm svp
