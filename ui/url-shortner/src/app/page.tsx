@@ -3,17 +3,24 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { InputGroup, InputGroupAddon, InputGroupText, InputGroupInput } from "@/components/ui/input-group";
 import { useState } from "react";
 
 export default function Home() {
-  const [url, setUrl] = useState("http://localhost:3000/");
+  const [longUrl, setLongUrl] = useState("");
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    console.log("Shortening:", url);
-    // TODO: Integrate with backend API
+  async function handleSubmit() {
+    console.log("Shortening:", longUrl);
+    const response = await fetch("http://localhost:5050/shorten", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ longUrl: longUrl }),
+    });
+    const data = await response.json();
+    console.log("Shortened URL:", data);
   };
-
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-background text-foreground font-sans">
@@ -33,18 +40,20 @@ export default function Home() {
             <CardDescription>Paste your long URL below</CardDescription>
           </CardHeader>
           <CardContent>
-             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                <Input 
-                  type="url" 
-                  placeholder="http://localhost:3000/your-slug" 
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
-                  required
+              <InputGroup>
+                <InputGroupInput 
+                  placeholder="super-long-url-to-be-shorten-please"
+                  className=""
+                  onChange={(e) => setLongUrl(e.target.value)}
+                  value={longUrl}
                 />
-                <Button type="submit" className="w-full">
+                <InputGroupAddon>
+                  <InputGroupText>https://localhost:3000/</InputGroupText>
+                </InputGroupAddon>
+              </InputGroup>
+                <Button onClick={() => handleSubmit()} className="mt-4 hover:cursor-pointer">
                   Shorten URL
                 </Button>
-             </form>
           </CardContent>
         </Card>
       </main>
