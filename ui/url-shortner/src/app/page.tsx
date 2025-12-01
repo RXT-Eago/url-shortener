@@ -8,6 +8,7 @@ import { useState } from "react";
 
 export default function Home() {
   const [longUrl, setLongUrl] = useState("");
+  const [slug, setSlug] = useState("");
 
   async function handleSubmit() {
     console.log("Shortening:", longUrl);
@@ -20,6 +21,7 @@ export default function Home() {
     });
     const data = await response.json();
     console.log("Shortened URL:", data);
+    setSlug(data.slug);
   };
 
   return (
@@ -51,6 +53,11 @@ export default function Home() {
                   <InputGroupText>https://localhost:3000/</InputGroupText>
                 </InputGroupAddon>
               </InputGroup>
+              {slug && (
+                <p className="text-sm text-muted-foreground">
+                  Shortened URL: <a href={`http://localhost:3000/${slug}`} className="text-primary underline">{`http://localhost:3000/${slug}`}</a>
+                </p>
+              )}
                 <Button onClick={() => handleSubmit()} className="mt-4 hover:cursor-pointer">
                   Shorten URL
                 </Button>
