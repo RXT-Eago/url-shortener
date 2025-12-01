@@ -30,12 +30,21 @@ app.post("/shorten", async (request: Request, response: Response) => {
   const hash = crypto.createHash('sha256').update(longUrl).digest('hex').substring(0, 8);
   
   try {
-    let match = await prisma.urlMatch.findUnique({
+    let match = await prisma.urlMatch.findFirst({
+      where: { longUrl: longUrl },
+    });
+
+    if (match) {
+      return response.status(200).json({ slug: match.slug });
+    }
+    
+    // If longUrl doesn't exist, proceed to create a new one, ensuring slug uniqueness
+    let uniqueSlugMatch = await prisma.urlMatch.findUnique({
       where: { slug: hash },
     });
 
-    if (!match) {
-      match = await prisma.urlMatch.create({
+    if (!uniqueSlugMatch) {
+      uniqueSlugMatch = await prisma.urlMatch.create({
         data: {
           slug: hash,
           longUrl,
@@ -43,7 +52,7 @@ app.post("/shorten", async (request: Request, response: Response) => {
       });
     }
 
-    response.status(200).json({ slug: match.slug });
+    response.status(200).json({ slug: uniqueSlugMatch.slug });
   } catch (error) {
     console.error("Error creating/fetching url match:", error);
     response.status(500).json({ error: "Internal Server Error" });
@@ -52,7 +61,6 @@ app.post("/shorten", async (request: Request, response: Response) => {
 
 app.get("/:slug", async (request: Request<{ slug: string }>, response: Response) => {
   const { slug } = request.params;
-  console.log("slug: ", slug);
   try {
     const match = await prisma.urlMatch.findUnique({
       where: { slug },
@@ -69,11 +77,7 @@ app.get("/:slug", async (request: Request<{ slug: string }>, response: Response)
     }
   } catch (error) {
     console.error("Error fetching url match:", error);
-    if (request.accepts('json')) {
-      response.status(500).json({ error: "Internal Server Error" });
-    } else {
-      response.status(500).send("Internal Server Error");
-    }
+    response.status(500).json({ error: "Internal Server Error" });
   }
 });
 
