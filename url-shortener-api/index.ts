@@ -65,19 +65,21 @@ app.get("/:slug", async (request: Request<{ slug: string }>, response: Response)
     const match = await prisma.urlMatch.findUnique({
       where: { slug },
     });
-
+    console.log("match", match)
     if (match) {
-      if (request.accepts('json')) {
-        response.status(200).json({ url: match.longUrl });
-      } else {
-        response.redirect(301, match.longUrl);
-      }
+      response.send({
+        redirect: true,
+        url: match.longUrl,
+      })
     } else {
-      response.status(404).json({ error: "Not found" });
+      response.send({
+        redirect: false,
+        url: null,
+      })
     }
   } catch (error) {
     console.error("Error fetching url match:", error);
-    response.status(500).json({ error: "Internal Server Error" });
+    response.status(500).send("Internal Server Error");
   }
 });
 
